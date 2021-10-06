@@ -8,6 +8,9 @@
 # This version is region specific , and you are required to manually perform the initial cofiguration for the AWS Powershell tools . 
 # https://docs.aws.amazon.com/powershell/latest/userguide/specifying-your-aws-credentials.html#specifying-your-aws-credentials-use.
 # The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
+# None of the code is stolen , or taken from anywhere on the internet . 
+# each line has been painstakingly written by me .
+# And I will take a polygraph to prove it .
 
 
 
