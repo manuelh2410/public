@@ -1,4 +1,5 @@
 #Notes:
+# releasing this because my laptop has probably been compromised . 
 # This script creates two security groups in your AWS Account namely "RDP" and "SSH" 
 # Is also enumerates all instances your default AWS region , and ensures that both security groups are linked to each of these instances . 
 # Its implemented as a loop ,which means that the powershell window this script is executed in , should remain open .  
