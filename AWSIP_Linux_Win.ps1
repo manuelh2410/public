@@ -245,10 +245,7 @@ Write-host "START Instance vs SG Group evaluation"
 
 
 
-                 #START RDP GROUP vs instance CHECK
-
-                        #Foreach ($instance in $instances) commented out as part of trouble shooting
-                            #{commented out as part of trouble shooting
+                
                                if ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP")
 
 		                           {write-host no rdp group linked  to instance $instance      [>>inner loop<<]
@@ -277,7 +274,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
        #OS Check:
     IF ($IsWindows -Like "True")
-       #Windows:
+       
        {
          If ($FirstRun -eq '0')
             {$OLDIP = (GET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP").OLDIP}
@@ -288,7 +285,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
             {write-host IP ADDRESSES IN SYNC [<<outer loop>>]}
        }
     Else
-        #Linux:
+       
         {
            $OLDIP = (get-content -Path  /var/log/AWSIP/config/OLDIP.log)
            IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))
@@ -302,15 +299,13 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
    IF($IsWindows -Like "True")
        {
-        #windows:
-        #Read Registry Set Variables
+        
         $RDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPGroup").RDPGROUP
         $SSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHGroup").SSHGROUP
        }
      else
       {
-        #Linux:
-        #Read Registry Set Variables
+      
         $SSHGroup = (get-content -Path  /var/log/AWSIP/config/SSHGroup.log)
         $RDPGroup = (get-content -Path  /var/log/AWSIP/config/RDPGroup.log)
       }
@@ -318,10 +313,10 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
      
      If ((($RDPGroup -or $SSHGroup -eq '0') -and ($myip -ne $oldip)) -or ($FIRSTRUN -eq '1'))
      {
-                                                                                                                                                                            #__Start_Group_Creation
+                                                                                                                                                                          
      Do
      {
-        Do                                                                                                                                                      #RDP Group Creation Loop
+        Do                                                                                                                                                      
          {
          Try 
          {
@@ -334,7 +329,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          }
          finally
          {
-         if ($NEWRDPGroup -like "sg-*") #Finally Set NEWRDPGroup variable
+         if ($NEWRDPGroup -like "sg-*") 
          {write-host  RDP Group Exists [RDP Group Creation loop]  [>>Inner loop<<]}
           }
 
@@ -342,7 +337,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          }until (($NEWRDPGroup -like "sg-*") -or ($OLDRDPGroup -like "sg-*")) 
 
 
-        Do # SSH Group Creation Loop                                                                                                                                                      SSH Group Creation Loop
+        Do                                                                                                                                                   
          {
           Try
            {
@@ -351,7 +346,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
           Catch
            {
              write-host SSH GROUP DOES NOT EXIST,Creating.............[SSH Group Creation loop] [>>Inner loop<<]
-             $NEWSSHGroup = New-EC2SecurityGroup -GroupName SSH -Description "Linux remote Access" #Create New SSH Group and set variable
+             $NEWSSHGroup = New-EC2SecurityGroup -GroupName SSH -Description "Linux remote Access"
            }
            finally
            {
@@ -405,8 +400,8 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          $SSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHGroup").SSHGroup
          $NEWRDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "NEWRDPGroup").NEWRDPGroup
          $NEWSSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "NEWSSHGroup").NEWSSHGroup
-         $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId #Retrieve sg- for existing RDP Group and set variable
-         $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId #Retrieve sg- for existing SSH Group and set variable
+         $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId 
+         $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId 
          $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
         } else
         {
