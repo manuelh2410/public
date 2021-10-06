@@ -1,12 +1,13 @@
 #Notes:
 # releasing this because my laptop has probably been compromised . 
+# The script was created out of pure frustation of having to manually update my security group entries before I can connect to my AWS instances. 
 # This script creates two security groups in your AWS Account namely "RDP" and "SSH" 
 # Is also enumerates all instances your default AWS region , and ensures that both security groups are linked to each of these instances . 
 # Its implemented as a loop ,which means that the powershell window this script is executed in , should remain open .  
 # It also maintains a consistent pemission entry for your public IP address in each of these security groups . 
 # This version is region specific , and you are required to manually perform the initial cofiguration for the AWS Powershell tools . 
 # https://docs.aws.amazon.com/powershell/latest/userguide/specifying-your-aws-credentials.html#specifying-your-aws-credentials-use.
-# The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment . 
+# The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
 
 
 
