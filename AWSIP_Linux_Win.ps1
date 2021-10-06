@@ -1,20 +1,10 @@
 #Notes:
-#  We can retrieve $OLDIP from either the registry or the AWS Security Group
-#  $commandstring = ($RDP+$instanceGroups) -split ' '
-#  This is Powershell behaviour !!! #Rebuild variable with array of strings ' '
-#  -split is required to split the string in to an array of strings for use with the "Edit-EC2InstanceAttribute " command-let
-#  Requires support for powershell 7
-#  Do not manually change IP Registry Values in the registry
-#  TO DO , ADD MULTI REGION SUPPORT!! (check if each api call supports the -Region Parameter)
-#  Port Script to Bash
-#  Logic Flow mostly controled by conditions for entering and exiting loops
-#  1st Run Config  All reg keys "0" No security Groups
-#  Comma /array((a,b,c) -eq "test") is a positional evaluation
-#  To DO , Pre-filter windows /linux instance array based on instance TAG
-#  ADD GUI Prompt For Access Creds
-#  For PS on Linux , PS Variables are inaccessible when switching to shell session , shell variables are unavailable in PS session .
-#Synopsis
-#Date 05/07/2021  # Work on PSGET Sub-routine for PS version 3
+# This script creates two security groups in your AWS Account namely "RDP" and "SSH" 
+# Its implemented as a loop ,which means that the powershell window this script is executed in , should remain open .  
+# It also maintains a consistent pemission entry for your public IP address in each of these security groups . 
+# This version is region specific , and you are required to manually perform the initial cofiguration for the AWS Powershell tools . 
+# https://docs.aws.amazon.com/powershell/latest/userguide/specifying-your-aws-credentials.html#specifying-your-aws-credentials-use.
+# The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment . 
 
 
 
