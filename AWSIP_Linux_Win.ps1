@@ -1,5 +1,6 @@
 #Notes:
 # This script creates two security groups in your AWS Account namely "RDP" and "SSH" 
+# Is also enumerates all instances your default AWS region , and ensures that both security groups are linked to each of these instances . 
 # Its implemented as a loop ,which means that the powershell window this script is executed in , should remain open .  
 # It also maintains a consistent pemission entry for your public IP address in each of these security groups . 
 # This version is region specific , and you are required to manually perform the initial cofiguration for the AWS Powershell tools . 
@@ -403,9 +404,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#<6>_Outside loop ADD /Revoke Permissions Monitor loop
-     #Read Registry Set Variables (Sanity Check)
-     #OSCHECK
+
      If ($IsWindows -Like "True")
         {
          #Windows:
@@ -423,15 +422,15 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          $SSHGroup = get-content -Path  /var/log/AWSIP/config/SSHGroup.log
          $NEWRDPGroup = get-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log
          $NEWSSHGroup = get-content -Path  /var/log/AWSIP/config/NEWSSHGroup.log
-         $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId #Retrieve sg- for existing RDP Group and set variable
-         $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId #Retrieve sg- for existing SSH Group and set variable
+         $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId 
+         $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId 
          $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
         }
 
 
 
      #
-     If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1")) -or ($FIRSTRUN -eq '1') ) #New Groups Scenario IE Create new Permissions for new Groups
+     If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1")) -or ($FIRSTRUN -eq '1') ) 
         {
         Write-host NEW Groups Adding Permssions
         $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
@@ -440,7 +439,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         Grant-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 )
         }
         elseif
-        (($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($FIRSTRUN -eq '0')) #OLD Groups Scenario IE Update Permissions Existing Groups
+        (($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($FIRSTRUN -eq '0'))
         {
         Write-host Groups Exist  Removing Old Permissions before Adding Permissions
         $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$OLDIP"}
@@ -454,12 +453,11 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 )
         GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 )
         }
-            IF ($IsWindows -Like "True") #OS CHECK
+            IF ($IsWindows -Like "True") 
                {
-               #Windows
-               #Set OLDIP Variable and registry KEY AFTER Permissions have been SET
+               
                $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
-               SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "$OLDIP"##Set value for OLDIP
+               SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "$OLDIP"
                }else {
                #Linux
                $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
@@ -469,8 +467,8 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
      #
     IF($IsWindows -Like "True")
     {
-     #Windows:
-     If ($RDPGroup -eq '1' -and $SSHGRoup -eq '1' -and $FirstRun -eq '0')#Cleanup NewSecurity Group Variables and Re-Set Registy to 0
+    
+     If ($RDPGroup -eq '1' -and $SSHGRoup -eq '1' -and $FirstRun -eq '0')
         {
          Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWRDPGroup" -Value "0"
          Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWSSHGroup" -Value "0"
@@ -478,7 +476,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          Set-Variable -name NEWSSHGroup -Value '0'
         }
     } else
-     #Linux:
+    
         {
           if($RDPGroup -eq '1' -and $SSHGRoup -eq '1' -and $FirstRun -eq '0')
           {
@@ -490,9 +488,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         }
 
 
-    #<Internal Stop>
 
- # Modify [CmdletBinding()] to [CmdletBinding(SupportsShouldProcess=$true, DefaultParameterSetName='Path')]
 } until ($MYIP -like "finish")
 
 #//////////////////////////////////\\\\\\\\\\\\\\\\\\\//////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\////////////////////////////\\\\\\\\\
