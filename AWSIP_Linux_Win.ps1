@@ -12,17 +12,15 @@
 Do
 {
 
-      #Pre-Flight Checks
-#<1>_Outside loop configure logging
-      #Get-ScriptAnalyzerRule
+
        Write-host START LOG
        Get-Date
        #Set-PSDebug -Trace 2
-       Start-Sleep -Seconds 120 #Frequency ENTRY!!  (Avoid Rate Limit)
+       Start-Sleep -Seconds 120 
 
-#<2>_Outside loop CREATE/CHECK REG ENTRIES       (PRE-FLIGHT)
 
-       #Check OS Type
+
+     
       Write-Host "Checking OS Type"
 
    IF ($IsWindows -Like "True")
@@ -31,7 +29,7 @@ Do
                    write-host Inspecting Registry [AWSIP] registry key  [<<outer loop>>]
                    if(Test-Path -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP')
                        {write-host [AWSIP] registry key is present}
-                   else #Create Registry Keys
+                   else
                        {
                          New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP"
                          New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\config"
@@ -49,12 +47,11 @@ Do
                     {write-host [AWSIP] folders are present}
                      else
                          {
-                          #Linux:
-                          #Create Folders/Files (Mock Registry)
+                    
                           New-Item -Path "/var/log" -Name "AWSIP" -ItemType "directory"
                           New-Item -Path "/var/log/AWSIP" -Name "config" -ItemType "directory"
 
-                          #Linux (Set Access)
+                      
                           chmod -R +0777 "/var/log/AWSIP"
 
                           New-Item -Path "/var/log/AWSIP/config" -Name "RDPGroup.log" -ItemType "file"
@@ -65,17 +62,17 @@ Do
                           New-Item -Path "/var/log/AWSIP/config" -Name "MYIP.log" -ItemType "file"
 
 
-                          #Linux (Set Access)
+                       
                           chmod -R +0777 "/var/log/AWSIP"
 
-                          #Zero Values
+                     
                           set-content -Path  /var/log/AWSIP/config/RDPGroup.log  -Value 0
                           set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value 0
                           set-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log  -Value 0
                           set-content -Path  /var/log/AWSIP/config/NEWSSHGroup.log  -Value 0
                           set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value 0
                           set-content -Path  /var/log/AWSIP/config/MYIP.log -Value 0
-                          #Read Values:
+                        
                           $RDPGroup = get-content -Path  /var/log/AWSIP/config/RDPGroup.log
                           $SSHGroup = get-content -Path  /var/log/AWSIP/config/SSHGroup.log
                           $NEWRDPGroup = get-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log
@@ -87,22 +84,22 @@ Do
 
 
 
-#<3>_Outside loop CHECK AWS TOOLS INSTALLATION  (PRE-FLIGHT)
+
        Write-host AWS Powershell Tools  availability check [<<outer loop>>]
-       #Set versions in array
+       
        $versions = {4,5,5.1}
        #\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-       #Start Powershell Core Support. Alternative https://docs.microsoft.com/en-us/powershell/scripting/gallery/concepts/script-psedition-support?view=powershell-7.1
-       if ((($PSVersionTable).PSEdition -like "core") -and (($PSVersionTable).PSversion.Major -ge "6"))
+    
+     if ((($PSVersionTable).PSEdition -like "core") -and (($PSVersionTable).PSversion.Major -ge "6"))
           {
            try {
-                #Attempting to Import AWS AWSPowerShell.NetCore
+              
                  Write-Host attempting initial import AWSPowerShell.NetCore
                   Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
                }
             catch {
                    Do {
-                       #Download and install module
+                     
                        Write-Host installing AWSPowerShell.NetCore
                        Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
                        } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell.NetCore")
@@ -111,11 +108,11 @@ Do
                     {write-host AWSPowerShell.NetCore Support Added}
        }
 
-       #Powershell Core Support Powershell Desktop version
+       
        if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -in $versions))
           {
            try {
-                 #Attempting to Import AWS AWSPowerShell.NetCore
+                
                  Write-Host attempting initial import AWSPowerShell.NetCore
                  Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
                }
@@ -126,13 +123,13 @@ Do
                          } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell.NetCore")
                       }
           }
-       #End Powershell Core Support
+      
 
 
-       #Start AWSPowerShell Desktop Support
+       
        if ((($PSVersionTable).PSEdition -like "desktop")  -and (($PSVersionTable).PSversion.Major -eq "3"))
-          {#OS Check:
-           #Attempting to Import AWS AWSPowerShell
+          {
+          
            Write-Host attempting initial import AWSPowerShell
            try {
                Import-Module -name AWSPowerShell -Scope  Global -force
@@ -145,9 +142,9 @@ Do
                               }
                                Catch {
                                        Do {
-                                           #PsGet Sub-Routine
+                                          
                                            Write-Host Getting PS-Get Module
-                                           invoke-webrequest -Uri https://psg-prod-eastus.azureedge.net/packages/powershellget.2.2.5.nupkg -OutFile 'c:\temp\AWSPowerShell.zip'  #needs to be converted to linux
+                                           invoke-webrequest -Uri https://psg-prod-eastus.azureedge.net/packages/powershellget.2.2.5.nupkg -OutFile 'c:\temp\AWSPowerShell.zip' 
                                            Expand-archive "C:\temp\AWSPowerShell.zip" "C:\temp\AWSPowerShell"
                                            Move-item "C:\temp\AWSPowerShell\PowerShellGet.psd1" "C:\Program Files\WindowsPowerShell\Modules"
                                            Import-Module -Name PowerShellGet -Scope Global -Force
@@ -158,18 +155,17 @@ Do
                           } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell")
                       }
            }
-       #END AWSPowerShell Desktop Support
 
 
 
-#1st RUN CHECK
+
+
        If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP-and $MYIP -eq '0'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
-#Start DO Loop
-#<4>_Outside loop  CHECK CURRENT IP
+
       write-host checking current public ip      [<<outer loop>>]
-      #loop until $webip contains IP address
+    
       Do  {
            try{
                write-host "checking API-1"
@@ -186,16 +182,15 @@ Do
            }
       until ($webip -like "*.*")
 
-      #continue after IP has been retrieved
+     
 
       $Sub = "/32"
       $MyIP = $webip.trim()+$sub
 
-       #set registry value
-       #OS Check:
+     
     IF ($IsWindows -Like "True")
        {
-        SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "MYIP" -Value "$MYIP"##Set value for MYIP
+        SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "MYIP" -Value "$MYIP"
        }
        else {
              Set-content -Path  /var/log/AWSIP/config/MYIP.log -Value $MYIP
@@ -205,45 +200,41 @@ Do
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#(1) _Monitor_<instances>  Outside loop "Security Group VS Instance Monitor"
 
-#Set-PSBreakpoint -script "C:\Users\manuel\Desktop\PowershellScripts\AWS Security Group Access_Complete_Powershell_Core.ps1" -Line 112
 
-   if (($Firstrun -eq '0') -and ($RDPGROUP -eq '1') -and ($SSHGroup -eq '1')) #Condition to Guard Loop to ensure that it only runs if groups exist
+   if (($Firstrun -eq '0') -and ($RDPGROUP -eq '1') -and ($SSHGroup -eq '1'))
     {
       $instances = ((Get-EC2Instance).Instances).InstanceID
 write-host Instances enumerated  [<<outer loop>>]
 
-      #Variables are set as place holders for existing Security group ids
-      $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId #Retrieve sg- for existing RDP Group and set variable
-      $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId #Retrieve sg- for existing SSH Group and set variable
+      
+      $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId 
+      $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId 
 
 Write-host "START Instance vs SG Group evaluation"
-   Foreach ($instance in $instances) #start "Instance vs SG Group evaluation"
-    { #Only start evaluation if groups are not linked to instances
+   Foreach ($instance in $instances) 
+    { 
       IF(((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or  ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
 
         { write-host instance $instance is missing one or more security groups
-          Do # Start-loop until desired state (RDP and SSH, Linked to each instance in account)
-            {    #START SSH GROUP vs instance CHECK
+          Do 
+            {   
 
-                        #Foreach ($instance in $instances) commented out as part of trouble shooting
-                              #{commented out as part of trouble shooting
+                       
                                 if ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH")
 
 								    {write-host NO_SSH_GROUP LINKED TO INSTANCE $instance
 
-                                      Do{# Modify [CmdletBinding()] to [CmdletBinding(SupportsShouldProcess=$true, DefaultParameterSetName='Path')]
-                                        #Get Linked Groups
+                                      Do{
+                                        
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
-                                        #rebuild string for next command
-                                        $commandstring = ($SSH,$instanceGroups) -split ' ' #See Script notes above
-                                        #Modify instance (grant Security Group access)
+                                       
+                                        $commandstring = ($SSH,$instanceGroups) -split ' ' 
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
                                         } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")
-									}#END SSH GROUP vs instance CHECK
+									}
 									if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
-	                          #}commented out as part of trouble shooting
+	                          
 
 
 
@@ -257,18 +248,18 @@ Write-host "START Instance vs SG Group evaluation"
 		                           {write-host no rdp group linked  to instance $instance      [>>inner loop<<]
 
                 					 Do{
-                                        #Get Linked Groups
+                                       
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
-                                        #rebuild string for next command
-                                        $commandstring = ($RDP,$instanceGroups) -split ' ' #See Script notes above
-                                        #Modify instance (grant Security Group access)
+                                       
+                                        $commandstring = ($RDP,$instanceGroups) -split ' ' 
+                                        
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
 										} until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP")
-				       			   }#END RDP GROUP vs instance CHECK
+				       			   }
 								   if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") {write-host RDP-GROUP linked to $instance}
-                              #}commented out as part of trouble shooting
+                              
 
-		    } until (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") -and ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")) # End-loop until desired state (RDP and SSH, Linked to each instance in account)
+		    } until (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") -and ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")) 
 write-host "END Instance vs Group remediation"   [>>inner loop<<]
         } write-host "END Instance vs Group evaluation" $instance    [>>inner loop<<]
     }
@@ -276,16 +267,16 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
  }
 
 
-#(2) _Monitor  Outside loop  "IP Monitor"
+
 
        #OS Check:
     IF ($IsWindows -Like "True")
        #Windows:
        {
          If ($FirstRun -eq '0')
-            {$OLDIP = (GET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP").OLDIP}##Set value for OLDIP variable Pre-evaluation ,not doing so causes blank value if firstrun is not '1',resulting in continuous ip missmatch  until $oldip is read at end of the script
-            IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0") -and ($OLDIP -ne "0"))#This trigger will still work even if $oldip does not exist ,
-            #trigger internal check and Remediation Desired state $myip = $oldip
+            {$OLDIP = (GET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP").OLDIP}
+            IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0") -and ($OLDIP -ne "0"))
+
             {write-host IP ADDRESSES out of SYNC!!!!! [outer loop]} elseif
             (($MYIP -eq $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))
             {write-host IP ADDRESSES IN SYNC [<<outer loop>>]}
@@ -294,16 +285,14 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         #Linux:
         {
            $OLDIP = (get-content -Path  /var/log/AWSIP/config/OLDIP.log)
-           IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))#This trigger will still work even if $oldip does not exist ,
-           #trigger internal check and Remediation Desired state $myip = $oldip
+           IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))
+	   
            {write-host IP ADDRESSES out of SYNC!!!!! [outer loop]} elseif
            (($MYIP -eq $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))
            {write-host IP ADDRESSES IN SYNC [<<outer loop>>]}
         }
 
-     #<internal Start>
 
-#_Trigger_<2>  Outside loop "Security Group Monitor"
 
    IF($IsWindows -Like "True")
        {
@@ -320,22 +309,22 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         $RDPGroup = (get-content -Path  /var/log/AWSIP/config/RDPGroup.log)
       }
 
-     #Desired state ($RDPGroup = 1 -and $SSHGroup = 1)
+     
      If ((($RDPGroup -or $SSHGroup -eq '0') -and ($myip -ne $oldip)) -or ($FIRSTRUN -eq '1'))
      {
                                                                                                                                                                             #__Start_Group_Creation
-     Do #Create Groups
+     Do
      {
-        Do # RDP Group Creation Loop                                                                                                                                                       #RDP Group Creation Loop
+        Do                                                                                                                                                      #RDP Group Creation Loop
          {
-         Try #Non-existing security group throw errors in script so (if condition) cannot be evaluated hence Try Catch
+         Try 
          {
-         $OLDRDPGroup = (Get-EC2SecurityGroup -GroupName RDP).GroupId #Get Existing RDP Group If possible
+         $OLDRDPGroup = (Get-EC2SecurityGroup -GroupName RDP).GroupId
          }
          Catch
          {
          write-host RDP GROUP DOES NOT EXIST,Creating.............[RDP Group Creation loop] [>>Inner loop<<]
-         $NEWRDPGroup = New-EC2SecurityGroup -GroupName RDP -Description "Windows remote Access" #Create New RDP Group and set variable
+         $NEWRDPGroup = New-EC2SecurityGroup -GroupName RDP -Description "Windows remote Access" 
          }
          finally
          {
@@ -344,14 +333,14 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
           }
 
 
-         }until (($NEWRDPGroup -like "sg-*") -or ($OLDRDPGroup -like "sg-*")) #Loop until Desired State (until an RDP Security Group Exists)
+         }until (($NEWRDPGroup -like "sg-*") -or ($OLDRDPGroup -like "sg-*")) 
 
 
         Do # SSH Group Creation Loop                                                                                                                                                      SSH Group Creation Loop
          {
           Try
            {
-             $OLDSSHGroup = (Get-EC2SecurityGroup -GroupName SSH).GroupId #Get Existing SSH Group If Possible
+             $OLDSSHGroup = (Get-EC2SecurityGroup -GroupName SSH).GroupId 
            }
           Catch
            {
@@ -360,17 +349,15 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
            }
            finally
            {
-             if ($NEWSSHGroup -like "sg-*") #Finally Set NEWSSHGroup variable
+             if ($NEWSSHGroup -like "sg-*") 
                 {write-host  SSH Group Exists. [SSH Group Creation loop]  [>>Inner loop<<]}
            }
 
-         }until (($NEWSSHGroup -like "sg-*") -or ($OLDSSHGroup -like "sg-*"))  #Loop until Desired State (until an SSH Security Group Exists)
-
+         }until (($NEWSSHGroup -like "sg-*") -or ($OLDSSHGroup -like "sg-*"))
 
       } until ((($NEWRDPGroup -like "sg-*") -and ($NEWSSHGroup -like "sg-*")) -or (($OLDRDPGroup -like "sg-*") -and ($OLDSSHGroup -like "sg-*")))
 
-         #Finally Set Registry Value For Group Registry Keys to "1" Before Exiting loop
-         #OSCHECK
+
      IF ($IsWindows -Like "True")
          #Windows:
          {
@@ -383,7 +370,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
           IF  (($OLDRDPGroup -like "sg-*") -or ($NEWRDPGroup -like "sg-*"))
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "RDPGroup" -Value "1"}
               IF  ($NEWRDPGroup -like "sg-*")
-              {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWRDPGroup" -Value "1"} #Loop until Desired State (until both Security Groups Exists)    #__END_Group_Creation
+              {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWRDPGroup" -Value "1"}
          } else
 
           #Linux:
@@ -407,7 +394,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
      If ($IsWindows -Like "True")
         {
-         #Windows:
+       
          $RDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPGroup").RDPGroup
          $SSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHGroup").SSHGroup
          $NEWRDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "NEWRDPGroup").NEWRDPGroup
@@ -417,7 +404,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
         } else
         {
-         #Linux:
+        
          $RDPGroup = get-content -Path  /var/log/AWSIP/config/RDPGroup.log
          $SSHGroup = get-content -Path  /var/log/AWSIP/config/SSHGroup.log
          $NEWRDPGroup = get-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log
