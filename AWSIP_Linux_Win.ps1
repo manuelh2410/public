@@ -5,7 +5,8 @@
 # Is also enumerates all instances your default AWS region , and ensures that both security groups are linked to each of these instances at all times. 
 # Because I wanted these conditions to be monitored constantly ,the script was implemented as a loop . 
 # This also means that the powershell window this script is executed in , should remain open at all times.  
-# It also maintains a consistent pemission entry for your public IP address in each of these security groups . 
+# It also maintains a consistent pemission entry for your public IP address in each of these security groups .
+# In windows the script should be executed as Administrator , in Linux as Root
 # This version is region specific , and you are required to manually perform the initial cofiguration for the AWS Powershell tools . 
 # https://docs.aws.amazon.com/powershell/latest/userguide/specifying-your-aws-credentials.html#specifying-your-aws-credentials-use.
 # The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
