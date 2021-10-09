@@ -230,7 +230,7 @@ Write-host "START Instance vs SG Group evaluation"
 
                              if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH") -and ((get-ec2instance $instance).Instances.Platform -notcontains "Windows" ))
 
-								    {write-host NO_SSH_GROUP LINKED TO INSTANCE $instance
+								    {write-host NO_SSH_GROUP LINKED TO Linux_INSTANCE $instance
 
                                       Do{
 
@@ -249,7 +249,7 @@ Write-host "START Instance vs SG Group evaluation"
 
                                if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and  ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
 
-		                           {write-host no rdp group linked  to instance $instance      [>>inner loop<<]
+		                           {write-host NO_RDP_GROUP LINKED TO Windows_INSTANCE $instance      [>>inner loop<<]
 
                 					 Do{
 
