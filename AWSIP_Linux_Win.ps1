@@ -221,49 +221,53 @@ write-host Instances enumerated  [<<outer loop>>]
 Write-host "START Instance vs SG Group evaluation"
    Foreach ($instance in $instances)
     {
-      IF(((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or  ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
+      IF (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or
+         ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
 
-        { write-host instance $instance is missing one or more security groups
+        { write-host evaluating $instance
           Do
             {
 
 
                              if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH") -and ((get-ec2instance $instance).Instances.Platform -notcontains "Windows" ))
 
-								    {write-host NO_SSH_GROUP LINKED TO Linux_INSTANCE $instance
+								                {write-host NO_SSH_GROUP LINKED TO Linux_INSTANCE $instance
 
                                       Do{
 
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
 
                                         $commandstring = ($SSH,$instanceGroups) -split ' '
+
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
                                         } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")
+                                        if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
+
 									}
-									if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
 
 
 
 
 
 
-                               if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and  ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
+                               if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
 
 		                           {write-host NO_RDP_GROUP LINKED TO Windows_INSTANCE $instance      [>>inner loop<<]
 
-                					 Do{
+                					           Do{
 
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
 
                                         $commandstring = ($RDP,$instanceGroups) -split ' '
 
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
-										} until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP")
-				       			   }
-								   if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") {write-host RDP-GROUP linked to $instance}
+										                    } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP")
+                                        if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") {write-host RDP-GROUP linked to $instance}
+				       		}
 
 
-		    } until (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") -and ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH"))
+
+		    } until (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") -or ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH"))
 write-host "END Instance vs Group remediation"   [>>inner loop<<]
         } write-host "END Instance vs Group evaluation" $instance    [>>inner loop<<]
     }
@@ -481,3 +485,4 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 } until ($MYIP -like "finish")
 
 #//////////////////////////////////\\\\\\\\\\\\\\\\\\\//////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\////////////////////////////\\\\\\\\\
+
