@@ -239,8 +239,8 @@ Write-host "START Instance vs SG Group evaluation"
                                         $commandstring = ($SSH,$instanceGroups) -split ' '
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
                                         } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")
-									} write-host SSH-GROUP linked to $instance
-									#if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
+									}
+									if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
 
 
 
