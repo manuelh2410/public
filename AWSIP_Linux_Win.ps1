@@ -2,7 +2,8 @@
 # releasing this because my laptop has probably been compromised .
 # The script was created out of pure frustation of having to manually update my security group entries before I can connect to my AWS instances.
 # This script creates two security groups in your AWS Account namely "RDP" and "SSH"
-# It also enumerates all instances your default AWS region , and ensures that both security groups are linked to each of these instances at all times.
+# It also enumerates all instances your default AWS region , and ensures that the appropriate security group is linked to each of these instances at all times.
+# The SSH Group will be linked to Linux instances ,while the RDP Security Group remains linked to your windows instances.
 # Because I wanted these conditions to be monitored constantly ,the script was implemented as a loop .
 # This also means that the powershell window this script is executed in , should remain open at all times.
 # It also maintains a consistent pemission entry for your public IP address in each of these security groups .
@@ -240,7 +241,7 @@ Write-host "START Instance vs SG Group evaluation"
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
                                         } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")
 									}
-									if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
+									  if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
 
 
 
