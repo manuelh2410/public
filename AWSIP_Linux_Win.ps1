@@ -12,7 +12,7 @@
 # The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
 # None of the code is stolen , or taken from anywhere on the internet .
 # each line has been painstakingly written by me .
-# And I will take a polygraph to prove it .
+# And I will take a polygraph to prove it.
 
 
 
