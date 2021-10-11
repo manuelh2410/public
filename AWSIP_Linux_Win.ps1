@@ -363,13 +363,13 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
      IF ($IsWindows -Like "True")
          #Windows:
          {
-          IF  (($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*"))
+          IF  ((($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*")) -and (Get-EC2SecurityGroup -GroupName "SSH").GroupId -like "sg-*")
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "SSHGroup" -Value "1"}
           IF  ($NEWSSHGroup -like "sg-*")
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWSSHGroup" -Value "1"}
 
 
-          IF  (($OLDRDPGroup -like "sg-*") -or ($NEWRDPGroup -like "sg-*"))
+          IF  ((($OLDRDPGroup -like "sg-*") -or ($NEWRDPGroup -like "sg-*")) -and (Get-EC2SecurityGroup -GroupName "RDP").GroupId -like "sg-*")
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "RDPGroup" -Value "1"}
               IF  ($NEWRDPGroup -like "sg-*")
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWRDPGroup" -Value "1"}
@@ -377,7 +377,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
           #Linux:
           {
-            IF ((($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*"))-and (Get-EC2SecurityGroup -GroupName "SSH").GroupId -like "sg-*")
+            IF ((($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*")) -and (Get-EC2SecurityGroup -GroupName "SSH").GroupId -like "sg-*")
                 {$SSHGroup = set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value "1"} else
                 {$SSHGroup = set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value "0"}
             IF  ($NEWSSHGroup -like "sg-*")
