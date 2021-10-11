@@ -12,7 +12,7 @@
 # The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
 # None of the code is stolen , or taken from anywhere on the internet .
 # each line has been painstakingly written by me .
-# And I will take a polygraph to prove it.
+# And I will take a polygraph to prove it .
 
 
 
@@ -165,10 +165,9 @@ Do
 
 
 
-       
-           
 
-       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP -eq '0') -and ($OLDIP -and $MYIP -eq '0'))
+
+       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
 
@@ -211,8 +210,7 @@ Do
 
 
    if (($Firstrun -eq '0') -and ($RDPGROUP -eq '1') -and ($SSHGroup -eq '1'))
-    { 
-write-host RDP Group and SSH Group Present ,First Run Zero
+    {
       $instances = ((Get-EC2Instance).Instances).InstanceID
 write-host Instances enumerated  [<<outer loop>>]
 
@@ -223,50 +221,46 @@ write-host Instances enumerated  [<<outer loop>>]
 Write-host "START Instance vs SG Group evaluation"
    Foreach ($instance in $instances)
     {
-      IF (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or
-         ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
+      IF(((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or  ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
 
-        { write-host  EVALUATING  $instance
+        { write-host instance $instance is missing one or more security groups
           Do
             {
 
 
                              if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH") -and ((get-ec2instance $instance).Instances.Platform -notcontains "Windows" ))
 
-								                {write-host NO_SSH_GROUP LINKED TO Linux_INSTANCE $instance
+								    {write-host NO_SSH_GROUP LINKED TO Linux_INSTANCE $instance
 
                                       Do{
 
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
 
                                         $commandstring = ($SSH,$instanceGroups) -split ' '
-
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
                                         } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH")
-                                        if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
-
-									}
-
+									} write-host SSH-GROUP linked to $instance
+									#if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
 
 
 
 
 
-                               if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
+
+                               if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and  ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
 
 		                           {write-host NO_RDP_GROUP LINKED TO Windows_INSTANCE $instance      [>>inner loop<<]
 
-                					           Do{
+                					 Do{
 
                                         $instanceGroups = ((Get-EC2InstanceAttribute -InstanceId $instance -Attribute groupSet).Groups).Groupid
 
                                         $commandstring = ($RDP,$instanceGroups) -split ' '
 
                                         Edit-EC2InstanceAttribute -InstanceId $instance -Group $commandstring
-										                    } until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP")
-                                        if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") {write-host RDP-GROUP linked to $instance}
-				       		}
-
+										} until((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP")
+				       			   }
+								   if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") {write-host RDP-GROUP linked to $instance}
 
 
 		    } until (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "RDP") -or ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH"))
@@ -318,8 +312,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
       }
 
 
-     If ((($RDPGroup -or $SSHGroup -eq '0') -and ($myip -ne $oldip)) -or ($FIRSTRUN -eq '1'))
-
+     If (($RDPGroup -or $SSHGroup -eq '0') -or ($FIRSTRUN -eq '1'))
      {
 
      Do
@@ -384,14 +377,17 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
           #Linux:
           {
-            IF  (($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*"))
-                {$SSHGroup = set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value "1"}
+            IF ((($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*"))-and (Get-EC2SecurityGroup -GroupName "SSH").GroupId -like "sg-*")
+                {$SSHGroup = set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value "1"} else
+                {$SSHGroup = set-content -Path  /var/log/AWSIP/config/SSHGroup.log  -Value "0"}
             IF  ($NEWSSHGroup -like "sg-*")
                 {$NEWSSHGroup = set-content -Path  /var/log/AWSIP/config/NEWSSHGroup.log  -Value "1"}
 
 
-            IF (($OLDRDPGroup -like "sg-*") -or ($NEWRDPGroup -like "sg-*"))
-               {$RDPGroup = set-content -Path  /var/log/AWSIP/config/RDPGroup.log  -Value "1"}
+            IF ((($OLDRDPGroup -like "sg-*") -or ($NEWRDPGroup -like "sg-*")) -and (Get-EC2SecurityGroup -GroupName "RDP").GroupId -like "sg-*")
+                {$RDPGroup = set-content -Path  /var/log/AWSIP/config/RDPGroup.log  -Value "1"} else
+                {$RDPGroup = set-content -Path  /var/log/AWSIP/config/RDPGroup.log  -Value "0"}
+
             IF ($NEWRDPGroup -like "sg-*")
                {$NEWRDPGroup = set-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log  -Value "1"}
           }
@@ -488,4 +484,3 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 } until ($MYIP -like "finish")
 
 #//////////////////////////////////\\\\\\\\\\\\\\\\\\\//////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\////////////////////////////\\\\\\\\\
-
