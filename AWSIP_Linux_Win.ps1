@@ -223,7 +223,7 @@ Write-host "START Instance vs SG Group evaluation"
     {
       IF(((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or  ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
 
-        { write-host instance $instance is missing one or more security groups
+        { write-host Evanluating Groups for instance $instance
           Do
             {
 
