@@ -165,7 +165,8 @@ Do
 
 
 
-
+       
+           
 
        If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP -eq '0') -and ($OLDIP -and $MYIP -eq '0'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
@@ -210,7 +211,8 @@ Do
 
 
    if (($Firstrun -eq '0') -and ($RDPGROUP -eq '1') -and ($SSHGroup -eq '1'))
-    {
+    { 
+write-host RDP Group and SSH Group Present ,First Run Zero
       $instances = ((Get-EC2Instance).Instances).InstanceID
 write-host Instances enumerated  [<<outer loop>>]
 
@@ -224,7 +226,7 @@ Write-host "START Instance vs SG Group evaluation"
       IF (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -or
          ((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "SSH"))
 
-        { write-host evaluating $instance
+        { write-host  EVALUATING  $instance
           Do
             {
 
@@ -317,6 +319,7 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
 
      If ((($RDPGroup -or $SSHGroup -eq '0') -and ($myip -ne $oldip)) -or ($FIRSTRUN -eq '1'))
+
      {
 
      Do
