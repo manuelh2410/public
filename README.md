@@ -1,7 +1,10 @@
-#Notes:
-# releasing this because my laptop has probably been compromised .
-# The script was created out of pure frustation of having to manually update my security group entries before I can connect to my AWS instances.
-# This script creates two security groups in your AWS Account namely "RDP" and "SSH"
+
+<p1> #Notes: </p1>
+<div>
+<p2 class="small"> 
+#Releasing this because my laptop has probably been compromised .
+#The script was created out of pure frustation of having to manually update my security group entries before I can connect to my AWS instances.
+#This script creates two security groups in your AWS Account namely "RDP" and "SSH"
 # It also enumerates all instances your default AWS region , and ensures that the appropriate security group is linked to each of these instances at all times.
 # The SSH Group will be linked to Linux instances ,while the RDP Security Group remains linked to your windows instances.
 # Because I wanted these conditions to be monitored constantly ,the script was implemented as a loop .
@@ -13,5 +16,6 @@
 # The script runs on both Windows and Linux , provided that Powershell is installed in your linux environment .
 # None of the code is stolen , or taken from anywhere on the internet .
 # each line has been painstakingly written by me .
-# And I will take a polygraph to prove it .
+# And I will take a polygraph to prove it.</p2>
+</div>
 
