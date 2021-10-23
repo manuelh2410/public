@@ -210,7 +210,7 @@ Do
 
 
 
-   if (($Firstrun -eq '0') -and ($RDPGROUP -eq '1') -and ($SSHGroup -eq '1'))
+ if (($RDPGROUP -eq '1') -and ($SSHGroup -eq '1'))
     {
       $instances = ((Get-EC2Instance).Instances).InstanceID
 write-host Instances enumerated  [<<outer loop>>]
