@@ -112,6 +112,7 @@ Do
                                    Do{
                                      Write-Host installing AWSPowerShell.NetCore
                                      Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
+                                     Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
                                      } until ((Get-Module -ListAvailable).Name -match "AWSPowerShell.NetCore")
                                   }
 
