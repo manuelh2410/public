@@ -98,72 +98,72 @@ Do
        $versions = {4,5,5.1}
        #\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-     if ((($PSVersionTable).PSEdition -like "core") -and (($PSVersionTable).PSversion.Major -ge "6"))
-          {
-           try {
+       DO
+       {
+           if (($PSVersionTable).PSEdition -like "core" -and (($PSVersionTable).PSversion.Major -ge "6"))
+             {
 
-                 Write-Host attempting initial import AWSPowerShell.NetCore
-                  Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
-               }
-            catch {
-                   Do {
+                               Write-Host attempting initial import AWSPowerShell.NetCore
+                               Import-Module -name AWSPowerShell.NetCore -Scope  Global -force | Write-Error
 
-                       Write-Host installing AWSPowerShell.NetCore
-                       Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
-                       } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell.NetCore")
-                  }
-                  if( (( Get-Module -ListAvailable).Name) -contains "AWSPowerShell.NetCore")
-                    {write-host AWSPowerShell.NetCore Support Added}
-       }
+                               If ($Error -match "AWSPowerShell.NetCore")
+                                  {
+                                   Do{
+                                     Write-Host installing AWSPowerShell.NetCore
+                                     Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
+                                     } until ((Get-Module -ListAvailable).Name -match "AWSPowerShell.NetCore")
+                                  }
 
-
-       if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -in $versions))
-          {
-           try {
-
-                 Write-Host attempting initial import AWSPowerShell.NetCore
-                 Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
-               }
-               Catch {
-                       Do{
-                           Write-Host installing AWSPowerShell.NetCore
-                           Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
-                         } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell.NetCore")
-                      }
-          }
+                if (( Get-Module -ListAvailable).Name -match "AWSPowerShell.NetCore")
+                   {write-host AWSPowerShell.NetCore Support Added}
+             }
 
 
+           if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -in $versions))
+             {
+
+                         Write-Host attempting initial import AWSPowerShell.NetCore
+                         Import-Module -name AWSPowerShell.NetCore -Scope  Global -force | Write-Error
+                         If ($Error -match "AWSPowerShell.NetCore")
+
+                         {
+                           Do{
+                               Write-Host installing AWSPowerShell.NetCore
+                               Install-Module -name AWSPowerShell.NetCore -Scope  AllUsers -force
+                             } until ((Get-Module -ListAvailable).Name -match "AWSPowerShell.NetCore")
+                         }
+             }
 
 
-       if ((($PSVersionTable).PSEdition -like "desktop")  -and (($PSVersionTable).PSversion.Major -eq "3"))
-          {
+           if ((($PSVersionTable).PSEdition -like "desktop")  -and (($PSVersionTable).PSversion.Major -eq "3"))
+             {
 
-           Write-Host attempting initial import AWSPowerShell
-           try {
-               Import-Module -name AWSPowerShell -Scope  Global -force
-               }
-                Catch { Write-Host installing AWSPowerShell Module
-                       DO {
-                           try
-                              {
-                               Install-Module -name AWSPowerShell -Scope  AllUsers -force
-                              }
-                               Catch {
-                                       Do {
+                   Write-Host attempting initial import AWSPowerShell
+                   Import-Module -name AWSPowerShell -Scope  Global -force | Write-Error
+                   If ($Error -match "AWSPowerShell.NetCore")
 
-                                           Write-Host Getting PS-Get Module
-                                           invoke-webrequest -Uri https://psg-prod-eastus.azureedge.net/packages/powershellget.2.2.5.nupkg -OutFile 'c:\temp\AWSPowerShell.zip'
-                                           Expand-archive "C:\temp\AWSPowerShell.zip" "C:\temp\AWSPowerShell"
-                                           Move-item "C:\temp\AWSPowerShell\PowerShellGet.psd1" "C:\Program Files\WindowsPowerShell\Modules"
-                                           Import-Module -Name PowerShellGet -Scope Global -Force
-                                           Update-Module -Name PowerShellGet
-                                           } until (((Get-Module -ListAvailable).Name) -contains "PowerShellGet")
-                                     }
+                       { Write-Host installing AWSPowerShell Module
+                           Do {
+                               try
+                                 {
+                                   Install-Module -name AWSPowerShell -Scope  AllUsers -force
+                                 }
+                                   catch {
+                                           Do {
 
-                          } until (((Get-Module -ListAvailable).Name) -contains "AWSPowerShell")
-                      }
-           }
+                                               Write-Host Getting PS-Get Module
+                                               invoke-webrequest -Uri https://psg-prod-eastus.azureedge.net/packages/powershellget.2.2.5.nupkg -OutFile 'c:\temp\AWSPowerShell.zip'
+                                               Expand-archive "C:\temp\AWSPowerShell.zip" "C:\temp\AWSPowerShell"
+                                               Move-item "C:\temp\AWSPowerShell\PowerShellGet.psd1" "C:\Program Files\WindowsPowerShell\Modules"
+                                               Import-Module -Name PowerShellGet -Scope Global -Force
+                                               Update-Module -Name PowerShellGet
+                                               } until ((Get-Module -ListAvailable).Name -contains "PowerShellGet*")
+                                         }
 
+                             } until ((Get-Module -ListAvailable).Name -contains "AWSPowerShell*")
+                         }
+             }
+       } until ((Get-Module -ListAvailable).Name -contains "AWSPowerShell*" -or  "AWSPowerShell.NetCore*")
 
 
 
