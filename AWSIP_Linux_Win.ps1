@@ -49,7 +49,8 @@ Do
                          $MYIP = New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "MYIP" -Value "0"  -PropertyType "String"
                        }
         }
-   ELSE
+
+      IF ($IsWindows -Like "False")
                    {
                     if(Test-Path -Path '/var/log/AWSIP')
                     {write-host [AWSIP] folders are present}
@@ -200,7 +201,8 @@ Do
        {
         SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "MYIP" -Value "$MYIP"
        }
-       else {
+       IF ($IsWindows -Like "False")
+            {
              Set-content -Path  /var/log/AWSIP/config/MYIP.log -Value $MYIP
             }
 
@@ -286,7 +288,8 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
             (($MYIP -eq $OLDIP) -and ($MYIP -ne "0")-and($OLDIP -ne "0"))
             {write-host IP ADDRESSES IN SYNC [<<outer loop>>]}
        }
-    Else
+
+     IF ($IsWindows -Like "False")
 
         {
            $OLDIP = (get-content -Path  /var/log/AWSIP/config/OLDIP.log)
@@ -305,7 +308,8 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
         $RDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPGroup").RDPGROUP
         $SSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHGroup").SSHGROUP
        }
-     else
+
+   IF ($IsWindows -Like "False")
       {
 
         $SSHGroup = (get-content -Path  /var/log/AWSIP/config/SSHGroup.log)
@@ -374,8 +378,9 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "RDPGroup" -Value "1"}
               IF  ($NEWRDPGroup -like "sg-*")
               {SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWRDPGroup" -Value "1"}
-         } else
+         }
 
+        IF ($IsWindows -Like "False")
           #Linux:
           {
             IF ((($OLDSSHGroup -like "sg-*") -or ($NEWSSHGroup -like "sg-*")) -and (Get-EC2SecurityGroup -GroupName "SSH").GroupId -like "sg-*")
@@ -408,7 +413,9 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
          $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
          $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
-        } else
+        }
+
+     IF ($IsWindows -Like "False")
         {
 
          $RDPGroup = get-content -Path  /var/log/AWSIP/config/RDPGroup.log
@@ -451,7 +458,9 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
 
                $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
                SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "$OLDIP"
-               }else {
+               }
+            IF ($IsWindows -Like "False")
+              {
                #Linux
                $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
                set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value $OLDIP
@@ -468,8 +477,8 @@ write-host "END Instance vs Group remediation"   [>>inner loop<<]
          Set-Variable -name NEWRDPGroup -Value '0'
          Set-Variable -name NEWSSHGroup -Value '0'
         }
-    } else
-
+    }
+     IF ($IsWindows -Like "False")
         {
           if($RDPGroup -eq '1' -and $SSHGRoup -eq '1' -and $FirstRun -eq '0')
           {
