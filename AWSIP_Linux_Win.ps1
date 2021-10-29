@@ -446,6 +446,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     $Tagspec.Tags = $Tag
                     $Tagspec.ResourceType = "Security-Group-Rule"
                     #
+                    $filter = New-Object Amazon.EC2.Model.Filter
                     $filter.name = "tag:AWSIP"
                     $filter.value = "AWSIP"
                     #
