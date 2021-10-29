@@ -288,7 +288,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                 IF ($IsWindows -Like "True")
 
                    {
-                     If ($FirstRun -eq '0')
+                     If ($FirstRun -eq '1')
                         {$OLDIP = (GET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP").OLDIP}
                         IF(($MYIP -ne $OLDIP) -and ($MYIP -ne "0") -and ($OLDIP -ne "0"))
 
@@ -440,7 +440,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     #TAG /Filter Config
                     $Tag = New-Object Amazon.EC2.Model.Tag
                     $Tag.Key = "AWSIP"
-                    $Tag.Value = "AWSIP"
+                    $Tag.Value = "manuel"
                     #
                     $Tagspec = New-Object Amazon.EC2.Model.TagSpecification
                     $Tagspec.Tags = $Tag
@@ -450,7 +450,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     $filter.name = "tag:AWSIP"
                     $filter.value = "AWSIP"
                     #
-                 If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
+                 If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1") -and ($NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
                     {
                     Write-host NEW Groups Adding Permssions
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
@@ -459,7 +459,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     Grant-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec
                     }
                     elseif
-                    (($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($FIRSTRUN -eq '0'))
+                    ((($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($SSHGROUP -eq "1") -and ($FIRSTRUN -eq '0')))
                     {
                     Write-host Groups Exist  Removing Old Permissions before Adding Permissions
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$OLDIP"}
