@@ -435,8 +435,9 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                      $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
                     }
 
-
-
+                     #
+                 If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1") -and ($NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
+                    {
                     #TAG /Filter Config
                     $Tag = New-Object Amazon.EC2.Model.Tag
                     $Tag.Key = "AWSIP"
@@ -448,10 +449,8 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     #
                     $filter = New-Object Amazon.EC2.Model.Filter
                     $filter.name = "tag:AWSIP"
-                    $filter.value = "AWSIP"
+                    $filter.value = "manuel"
                     #
-                 If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1") -and ($NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
-                    {
                     Write-host NEW Groups Adding Permssions
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
                     $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
@@ -461,6 +460,19 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     elseif
                     ((($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($SSHGROUP -eq "1") -and ($FIRSTRUN -eq '0')))
                     {
+                    #TAG /Filter Config
+                    $Tag = New-Object Amazon.EC2.Model.Tag
+                    $Tag.Key = "AWSIP"
+                    $Tag.Value = "manuel"
+                    #
+                    $Tagspec = New-Object Amazon.EC2.Model.TagSpecification
+                    $Tagspec.Tags = $Tag
+                    $Tagspec.ResourceType = "Security-Group-Rule"
+                    #
+                    $filter = New-Object Amazon.EC2.Model.Filter
+                    $filter.name = "tag:AWSIP"
+                    $filter.value = "manuel"
+                    #
                     Write-host Groups Exist  Removing Old Permissions before Adding Permissions
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$OLDIP"}
                     $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$OLDIP"}
@@ -486,7 +498,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                           {
                            #Linux
                            $OLDIP = (Get-EC2SecurityGrouprule -filter $filter).CidrIpv4
-                           set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value $OLDIP
+                           set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value "$OLDIP"
                            }
 
                  #
