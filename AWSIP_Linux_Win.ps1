@@ -180,6 +180,8 @@ Do
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
 
+
+
       write-host checking current public ip      [<<outer loop>>]
 
       Do  {
@@ -281,8 +283,8 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
 
 
 
-
-                   #OS Check:
+                #OLDIP
+                #OS Check:
                 IF ($IsWindows -Like "True")
 
                    {
@@ -435,14 +437,25 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
 
 
 
-                 #
+                    #TAG /Filter Config
+                    $Tag = New-Object Amazon.EC2.Model.Tag
+                    $Tag.Key = "AWSIP"
+                    $Tag.Value = "AWSIP"
+                    #
+                    $Tagspec = New-Object Amazon.EC2.Model.TagSpecification
+                    $Tagspec.Tags = $Tag
+                    $Tagspec.ResourceType = "Security-Group-Rule"
+                    #
+                    $filter.name = "tag:AWSIP"
+                    $filter.value = "AWSIP"
+                    #
                  If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
                     {
                     Write-host NEW Groups Adding Permssions
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
                     $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
-                    Grant-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 )
-                    Grant-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 )
+                    Grant-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec
+                    Grant-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec
                     }
                     elseif
                     (($OLDIP -ne $MYIP) -and ($RDPGROUP -eq "1") -and ($FIRSTRUN -eq '0'))
@@ -459,16 +472,19 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 )
                     GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 )
                     }
+                        #SETOLIP
+
+                        #
                         IF ($IsWindows -Like "True")
                            {
 
-                           $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
+                           $OLDIP = (Get-EC2SecurityGrouprule -filter $filter).CidrIpv4
                            SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "$OLDIP"
                            }
                         IF ($IsWindows -Like "False")
                           {
                            #Linux
-                           $OLDIP = (Get-EC2SecurityGroup -Groupname RDP).IpPermissions.ipv4Ranges.cidrip
+                           $OLDIP = (Get-EC2SecurityGrouprule -filter $filter).CidrIpv4
                            set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value $OLDIP
                            }
 
