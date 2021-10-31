@@ -473,8 +473,8 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     #
                     Write-host Groups Exist  Removing Old Permissions before Adding Permissions
 
-                    REVOKE-EC2SecurityGroupIngress -GroupID $SSH -SecurityGroupRuleId $SSHRule
-                    REVOKE-EC2SecurityGroupIngress -GroupID $RDP -SecurityGroupRuleId $RDPRule
+                    REVOKE-EC2SecurityGroupIngress -GroupID $SSH -SecurityGroupRuleId $SSHRuleID
+                    REVOKE-EC2SecurityGroupIngress -GroupID $RDP -SecurityGroupRuleId $RDPRuleID
                     #
                     Write-host Adding Permissions After Removal
                     $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
@@ -491,6 +491,8 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                                       {
                                        $OLDIP = (Get-EC2SecurityGrouprule -filter $filter).CidrIpv4[0]
                                        SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "$OLDIP"
+                                       SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "SSHRULEID" -Value $SSHRuleID
+                                       SET-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "RDPRULEID" -Value $RDPRuleID
                                       }
                                   }
                                    catch
@@ -512,6 +514,8 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                                      {
                                       $OLDIP = (Get-EC2SecurityGrouprule -filter $filter).CidrIpv4[0]
                                       set-content -Path  /var/log/AWSIP/config/OLDIP.log -Value "$OLDIP"
+                                      set-content -Path  /var/log/AWSIP/config/SSHRULEID.log -Value $SSHRuleID
+                                      set-content -Path  /var/log/AWSIP/config/RDPRULEID.log -Value $RDPRuleID
                                      }
                                  }
                                   catch{
