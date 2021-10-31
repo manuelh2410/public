@@ -16,7 +16,6 @@
 # And I will take a polygraph to prove it .
 
 
-
 Do
 {
 
@@ -25,6 +24,13 @@ Do
        Get-Date
        #Set-PSDebug -Trace 2
        #Start-Sleep -Seconds 120
+       #logging
+       IF ($IsWindows -Like "False")
+       {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt"}
+
+       #
+       IF ($IsWindows -Like "True")
+       {Start-transcript -Path "C:\Windows\Temp\AWSIP.txt"}
 
 
 
@@ -554,6 +560,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
 
 
       }
+
 } until ($MYIP -like "finish")
 
 #//////////////////////////////////\\\\\\\\\\\\\\\\\\\//////////////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\////////////////////////////\\\\\\\\\
