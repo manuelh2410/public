@@ -15,6 +15,13 @@
 # each line has been painstakingly written by me .
 # And I will take a polygraph to prove it .
 
+ #logging
+ IF ($IsWindows -Like "False")
+ {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt"}
+
+ #
+ IF ($IsWindows -Like "True")
+ {Start-transcript -Path "C:\Windows\Temp\AWSIP.txt"}
 
 Do
 {
@@ -24,13 +31,7 @@ Do
        Get-Date
        #Set-PSDebug -Trace 2
        #Start-Sleep -Seconds 120
-       #logging
-       IF ($IsWindows -Like "False")
-       {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt"}
 
-       #
-       IF ($IsWindows -Like "True")
-       {Start-transcript -Path "C:\Windows\Temp\AWSIP.txt"}
 
 
 
