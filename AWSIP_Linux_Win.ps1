@@ -497,7 +497,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                                   }
                                    catch
                                         {
-                                          Write-host Adding Permissions After Removal
+                                          Write-host Permissions dont exist Adding Permissions
                                           $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
                                           $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
                                           $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
@@ -519,7 +519,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                                      }
                                  }
                                   catch{
-                                        Write-host Adding Permissions After Removal
+                                        Write-host Permissions dont exist Adding Permissions
                                         $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
                                         $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
                                         $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
