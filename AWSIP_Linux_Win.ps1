@@ -191,7 +191,10 @@ Do
 
 
        #1st Run
-       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDPGroup -and $SSHGROUP -eq '0'))
+       $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
+       $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
+
+       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDP -and $SSH -notlike 'sg-*'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
 
@@ -481,7 +484,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     $RDPRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
                     }
                     elseif
-                    ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($FIRSTRUN -eq '0')))
+                    ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and (OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
                     {
                     #
                     Write-host Groups Exist  Removing Old Permissions before Adding Permissions
