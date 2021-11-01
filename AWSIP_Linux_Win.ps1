@@ -191,7 +191,7 @@ Do
 
 
        #1st Run
-       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDPGroup -and $SSHGROUP-eq '0'))
+       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDPGroup -and $SSHGROUP -eq '0'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
 
