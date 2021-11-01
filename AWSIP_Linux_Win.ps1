@@ -17,11 +17,11 @@
 
  #logging
  IF ($IsWindows -Like "False")
- {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt"}
+ {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt" -Force}
 
  #
  IF ($IsWindows -Like "True")
- {Start-transcript -Path "C:\Windows\Temp\AWSIP.txt"}
+ {Start-transcript -Path "C:\Windows\Temp\AWSIP.txt" -Force}
 
 Do
 {
