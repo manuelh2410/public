@@ -191,7 +191,7 @@ Do
 
 
        #1st Run
-       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0'))
+       If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP-eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDPGroup -and $SHHGROUP-eq '0'))
        {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
 
 
@@ -471,7 +471,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     $filter.name = "tag:AWSIP"
                     $filter.value = "manuel"
                     #
-                    If ((($OLDIP -ne $MYIP) -and ($NEWRDPGroup -eq "1") -and ($NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
+                    If ( (($OLDIP -ne $MYIP) -and ($NEWRDPGroup -and $NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
                     {
                     #
                     Write-host NEW Groups Adding Permssions
