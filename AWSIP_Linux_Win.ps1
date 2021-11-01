@@ -17,7 +17,7 @@
 
  #logging
  IF ($IsWindows -Like "False")
- {Start-transcript -Path "/var/log/AWSIP/AWSIP.txt" -Force}
+ {Start-transcript -Path "/var/log/AWSIP.txt" -Force}
 
  #
  IF ($IsWindows -Like "True")
@@ -41,7 +41,7 @@ Do
    IF ($IsWindows -Like "True")
 
       {
-       DO{
+
                    write-host Inspecting Registry [AWSIP] registry key  [<<outer loop>>]
                    if(Test-Path -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP')
                        {write-host [AWSIP] registry key is present}
@@ -57,24 +57,24 @@ Do
                          $NEWSSHGroup = New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "NEWSSHGroup" -Value "0"
                          $OLDIP = New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "OLDIP" -Value "0"  -PropertyType "String"
                          $MYIP = New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -Name "MYIP" -Value "0"  -PropertyType "String"
+
                        }
-         } until ( (Test-Path -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP') -like "True")
+
       }
 
 
    IF ($IsWindows -Like "False")
                   {
-                   Do{
+
                     if(Test-Path -Path '/var/log/AWSIP')
                     {write-host [AWSIP] folders are present}
                      else
                          {
-
                           New-Item -Path "/var/log" -Name "AWSIP" -ItemType "directory"
                           New-Item -Path "/var/log/AWSIP" -Name "config" -ItemType "directory"
 
 
-                          chmod -R +0777 "/var/log/AWSIP"
+                          #chmod -R +0777 "/var/log/AWSIP"
 
                           New-Item -Path "/var/log/AWSIP/config" -Name "RDPGroup.log" -ItemType "file"
                           New-Item -Path "/var/log/AWSIP/config" -Name "SSHGroup.log" -ItemType "file"
@@ -86,8 +86,7 @@ Do
                           New-Item -Path "/var/log/AWSIP/config" -Name "MYIP.log" -ItemType "file"
 
 
-
-                          chmod -R +0777 "/var/log/AWSIP"
+                          #chmod -R +0777 "/var/log/AWSIP"
 
 
                           set-content -Path  /var/log/AWSIP/config/RDPGroup.log  -Value 0
@@ -109,7 +108,7 @@ Do
                           $MYIP = get-content -Path  /var/log/AWSIP/config/MYIP.log
 
                          }
-                   } until ((Test-Path -Path '/var/log/AWSIP') -like "True")
+
                   }
 
 
