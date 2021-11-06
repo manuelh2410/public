@@ -429,33 +429,6 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
 
 
 
-                 If ($IsWindows -Like "True")
-                    {
-
-                     $RDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPGroup").RDPGroup
-                     $SSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHGroup").SSHGroup
-                     $NEWRDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "NEWRDPGroup").NEWRDPGroup
-                     $NEWSSHGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "NEWSSHGroup").NEWSSHGroup
-                     $RDPRULEID = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPRULEID").RDPRULEID
-                     $SSHRULEID = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHRULEID").SSHRULEID
-                     $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
-                     $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
-                     $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
-                    }
-
-                 IF ($IsWindows -Like "False")
-                    {
-
-                     $RDPGroup = get-content -Path  /var/log/AWSIP/config/RDPGroup.log
-                     $SSHGroup = get-content -Path  /var/log/AWSIP/config/SSHGroup.log
-                     $NEWRDPGroup = get-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log
-                     $NEWSSHGroup = get-content -Path  /var/log/AWSIP/config/NEWSSHGroup.log
-                     $SSHRULEID = get-content -Path /var/log/AWSIP/config/SSHRULEID.log
-                     $RDPRULEID = get-content -Path /var/log/AWSIP/config/RDPRULEID.log
-                     $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
-                     $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
-                     $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
-                    }
 
                     #
                     #TAG /Filter Config
@@ -477,26 +450,59 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                     If ( (($OLDIP -ne $MYIP) -and ($NEWRDPGroup -and $NEWSSHGroup -eq "1")) -or ($FIRSTRUN -eq '1') )
                     {
                     #
-                    Write-host NEW Groups Adding Permssions
-                    $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
-                    $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
-                    $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
-                    $RDPRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
+                      Write-host NEW Groups Adding Permssions
+
+                          $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
+                          $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
+
+                                IF ($IsWindows -Like "False")
+                                   {
+                                    $MYIP = get-content -Path  /var/log/AWSIP/config/MYIP.log
+                                   }
+
+                                IF ($IsWindows -Like "True")
+                                    {
+                                     $MYIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "MYIP").MYIP
+                                    }
+                      #
+                      $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
+                      $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
+                      $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
+                      $RDPRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
                     }
                     elseif
+                    #
                     ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
                     {
                     #
-                    Write-host Groups Exist  Removing Old Permissions before Adding Permissions
+                       Write-host Groups Exist  Removing Old Permissions before Adding Permissions
 
-                    REVOKE-EC2SecurityGroupIngress -GroupID $SSH -SecurityGroupRuleId $SSHRuleID
-                    REVOKE-EC2SecurityGroupIngress -GroupID $RDP -SecurityGroupRuleId $RDPRuleID
-                    #
-                    Write-host Adding Permissions After Removal
-                    $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
-                    $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
-                    $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
-                    $RDPRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
+                          $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
+                          $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
+
+                                IF ($IsWindows -Like "False")
+                                    {
+                                    $SSHRULEID = get-content -Path /var/log/AWSIP/config/SSHRULEID.log
+                                    $RDPRULEID = get-content -Path /var/log/AWSIP/config/RDPRULEID.log
+                                    $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
+                                    }
+
+
+                                IF ($IsWindows -Like "True")
+                                    {
+                                     $RDPRULEID = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPRULEID").RDPRULEID
+                                     $SSHRULEID = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "SSHRULEID").SSHRULEID
+                                     $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
+                                    }
+                        #
+                        REVOKE-EC2SecurityGroupIngress -GroupID $SSH -SecurityGroupRuleId $SSHRuleID
+                        REVOKE-EC2SecurityGroupIngress -GroupID $RDP -SecurityGroupRuleId $RDPRuleID
+                        #
+                        Write-host Adding Permissions After Removal
+                        $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
+                        $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
+                        $SSHRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
+                        $RDPRuleID = (GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $Tagspec -select SecurityGroupRules).SecurityGroupRuleId
                     }
 
                         #Write Values Post Operation
