@@ -442,10 +442,10 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                      $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
                     }
                     #
-					$ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
-					$ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
-					$oldip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$OLDIP"}
-					$oldip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$OLDIP"}
+	            $ip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$MYIP"}
+		    $ip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$MYIP"}
+		    $oldip1 = @{ IpProtocol="tcp"; FromPort="22"; ToPort="22"; IpRanges="$OLDIP"}
+		    $oldip2 = @{ IpProtocol="tcp"; FromPort="3389"; ToPort="3389"; IpRanges="$OLDIP"}
                     #
                     #TAG /Filter Config
 
@@ -485,10 +485,10 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
 							GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $SSHTagspec
 		                    GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $RDPTagspec
 		                    }
-							#
-                      elseif
-                            ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
-                               {
+				    #
+                                      elseif
+                                            ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
+                                              {
                                                                                          #
                                                                                          Write-host Checking Permissions !!!!
 
@@ -553,7 +553,7 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                                                                    }
 
 
-                               }
+                                                  }
 
 
 
