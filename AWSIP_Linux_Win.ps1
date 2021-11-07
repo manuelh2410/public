@@ -489,16 +489,16 @@ IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShel
                       elseif
                             ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
                                {
-                                      #
-                                      Write-host Checking Permissions !!!!
+                                                                                         #
+                                                                                         Write-host Checking Permissions !!!!
 
 
-                                              IF ($IsWindows -Like "False")
+                                                                                         IF ($IsWindows -Like "False")
 												  {
 												  $OLDIP = get-content -Path  /var/log/AWSIP/config/OLDIP.log
 												  }
 
-										      IF ($IsWindows -Like "True")
+										         IF ($IsWindows -Like "True")
 												  {
 												  $OLDIP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "OLDIP").OLDIP
 												  }
