@@ -29,7 +29,7 @@ Do
 
   Write-host START LOG
   Get-Date
-  #Set-PSDebug -Trace 2
+  Set-PSDebug -Trace 2
   Start-Sleep -Seconds 60
 
 
@@ -111,8 +111,7 @@ Do
   {
     DO
     {
-      if (($PSVersionTable).PSEdition -like "core" -and (($PSVersionTable).PSversion.Major -ge "6") -or
-         (($PSVersionTable).PSEdition -like "desktop" -and (($PSVersionTable).PSversion.Major -in $versions)) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore"))
+      if (((($PSVersionTable).PSEdition -like "core" ) -and (($PSVersionTable).PSversion.Major -ge "6"))  -or  ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -match $versions) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore")))
 
       {
 
@@ -128,14 +127,13 @@ Do
         } until ((Get-Module -ListAvailable).Name -contains "AWSPowerShell.NetCore")
 
         IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell.NetCore")
-        {write-host AWSPowerShell.NetCore Support Added}
+           {write-host AWSPowerShell.NetCore Support Added}
 
 
       }
 
 
-      if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -eq "3") -and
-         ((Get-Module -ListAvailable).Name -contains "AWSPowerShell"))
+      if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -eq "3") -and ((Get-Module -ListAvailable).Name -contains "AWSPowerShell"))
       {
 
         Write-Host attempting initial import AWSPowerShell
@@ -175,8 +173,7 @@ Do
     Import-Module -name AWSPowerShell -Scope  Global -force
     Write-Host importing AWSPowerShell
   }
-  elseif
-                    ((Get-Module -ListAvailable).Name -contains "AWSPowerShell.NetCore")
+  elseif ((Get-Module -ListAvailable).Name -contains "AWSPowerShell.NetCore")
   {
     Import-Module -name AWSPowerShell.NetCore -Scope  Global -force
     Write-Host importing AWSPowerShell.NetCore
