@@ -33,9 +33,6 @@ Do
   Start-Sleep -Seconds 60
 
 
-
-
-
   Write-Host "Checking OS Type"
 
   IF ($IsWindows -Like "True")
@@ -103,10 +100,6 @@ Do
 
   }
 
-
-
-
-
   Write-host AWS Powershell Tools  availability check [<<outer loop>>]
 
   $versions = {4, 5, 5.1}
@@ -119,7 +112,7 @@ Do
     DO
     {
       if (($PSVersionTable).PSEdition -like "core" -and (($PSVersionTable).PSversion.Major -ge "6") -or
-                             (($PSVersionTable).PSEdition -like "desktop" -and (($PSVersionTable).PSversion.Major -in $versions)) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore"))
+         (($PSVersionTable).PSEdition -like "desktop" -and (($PSVersionTable).PSversion.Major -in $versions)) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore"))
 
       {
 
@@ -142,7 +135,7 @@ Do
 
 
       if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -eq "3") -and
-                            ((Get-Module -ListAvailable).Name -contains "AWSPowerShell"))
+         ((Get-Module -ListAvailable).Name -contains "AWSPowerShell"))
       {
 
         Write-Host attempting initial import AWSPowerShell
@@ -189,16 +182,12 @@ Do
     Write-Host importing AWSPowerShell.NetCore
   }
 
-
-
   #1st Run
   $RDP = (Get-EC2SecurityGroup -GroupName "RDP").GroupId
   $SSH = (Get-EC2SecurityGroup -GroupName "SSH").GroupId
 
   If (($SSHGroup -and $RDPGroup -eq '0') -and ($NEWRDPGroup -and $NEWRDPGROUP -eq '0') -and ($OLDIP -and $MYIP -eq '0') -and ($RDP -and $SSH -notlike 'sg-*'))
   {set-variable -name FIRSTRUN -value "1"} else {set-variable -name FIRSTRUN -value "0"}
-
-
 
 
   write-host checking current public ip      [<<outer loop>>]
@@ -223,8 +212,6 @@ Do
   }
   until ($webip -like "*.*")
 
-
-
   $Sub = "/32"
   $MyIP = $webip.trim() + $sub
 
@@ -237,8 +224,6 @@ Do
   {
     Set-content -Path  /var/log/AWSIP/config/MYIP.log -Value $MYIP
   }
-
-
 
   #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   IF ((Get-Module -ListAvailable).Name -contains "AWSPowerShell" -or "AWSPowerShell.NetCore")
@@ -280,10 +265,6 @@ Do
             if((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -contains "SSH") {write-host SSH-GROUP linked to $instance}
 
 
-
-
-
-
             if (((Get-EC2Instance -InstanceId $instance).Instances.securitygroups.GroupName -notcontains "RDP") -and ((get-ec2instance $instance).Instances.Platform -contains "Windows" ))
 
             {
@@ -309,9 +290,6 @@ Do
 
     }
 
-
-
-
     IF ($IsWindows -Like "True")
 
     {
@@ -334,8 +312,6 @@ Do
                        (($MYIP -eq $OLDIP) -and ($MYIP -ne "0") -and ($OLDIP -ne "0"))
       {write-host IP ADDRESSES IN SYNC [<<outer loop>>]}
     }
-
-
 
     IF($IsWindows -Like "True")
     {
@@ -433,11 +409,7 @@ Do
         {$NEWRDPGroup = set-content -Path  /var/log/AWSIP/config/NEWRDPGroup.log  -Value "1"}
       }
     }
-
     #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
     If ($IsWindows -Like "True")
     {
       $RDPGROUP = (Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\AWSIP\Config" -name "RDPGroup").RDPGroup
@@ -544,8 +516,6 @@ Do
         GRANT-EC2SecurityGroupIngress -GroupID $SSH -IpPermission @( $ip1 ) -TagSpecification $SSHTagspec
       }
 
-
-
       IF ($IsWindows -Like "True")
       {
 
@@ -571,10 +541,6 @@ Do
 
     }
 
-
-
-
-
     IF($IsWindows -Like "True")
     {
 
@@ -596,8 +562,6 @@ Do
         Set-Variable -name NEWSSHGroup -Value '0'
       }
     }
-
-
 
   }
 
