@@ -504,12 +504,10 @@ Do
       GRANT-EC2SecurityGroupIngress -GroupID $RDP -IpPermission @( $ip2 ) -TagSpecification $RDPTagspec
     }
     #
-    elseif
-                                            ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
+    elseif ((($OLDIP -ne $MYIP) -and ($RDPGROUP -and $SSHGROUP -eq "1") -and ($OLDIP -ne '0') -and ($FIRSTRUN -eq '0')))
     {
       #
       Write-host Checking Permissions !!!!
-
 
       IF ($IsWindows -Like "False")
       {
