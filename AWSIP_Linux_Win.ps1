@@ -30,7 +30,7 @@ Do
   Write-host START LOG
   Get-Date
   Set-PSDebug -Trace 2
-  Start-Sleep -Seconds 60
+  #Start-Sleep -Seconds 60
 
 
   Write-Host "Checking OS Type"
@@ -111,7 +111,7 @@ Do
   {
     DO
     {
-      if (((($PSVersionTable).PSEdition -like "core" ) -and (($PSVersionTable).PSversion.Major -ge "6"))  -or  ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -match $versions) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore")))
+      if (($PSVersionTable.PSEdition -like "core" -and $PSVersionTable.PSversion.Major -ge "6")  -or  ($PSVersionTable.PSEdition -like "desktop" -and $PSVersionTable.PSversion.Major -match $versions) -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell.NetCore"))
 
       {
 
