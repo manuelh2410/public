@@ -29,7 +29,7 @@ Do
 
   Write-host START LOG
   Get-Date
-  Set-PSDebug -Trace 2
+  #Set-PSDebug -Trace 2
   #Start-Sleep -Seconds 60
 
 
