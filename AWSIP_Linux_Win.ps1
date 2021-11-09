@@ -133,7 +133,7 @@ Do
       }
 
 
-      if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -eq "3") -and ((Get-Module -ListAvailable).Name -contains "AWSPowerShell"))
+      if ((($PSVersionTable).PSEdition -like "desktop") -and (($PSVersionTable).PSversion.Major -eq "3") -and ((Get-Module -ListAvailable).Name -notcontains "AWSPowerShell"))
       {
 
         Write-Host attempting initial import AWSPowerShell
