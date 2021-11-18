@@ -16,12 +16,14 @@
 # And I will take a polygraph to prove it .
 
 #logging
+Get-Date
+
 IF ($IsWindows -Like "False")
-{Start-transcript -Path "/var/log/AWSIP.txt" -Force}
+{Start-transcript -Path "/var/log/AWSIP.txt" -Force -NoClobber -Append}
 
 #
 IF ($IsWindows -Like "True")
-{Start-transcript -Path "C:\Windows\Temp\AWSIP.txt" -Force}
+{Start-transcript -Path "C:\Windows\Temp\AWSIP.txt" -Force -NoClobber -Append}
 
 Do
 {
